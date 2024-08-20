@@ -30,6 +30,7 @@ const Register = () => {
 	return (
 		<div className="auth">
 			<h1>Register</h1>
+
 			<form>
 				<input
 					required
@@ -38,6 +39,7 @@ const Register = () => {
 					name="username"
 					onChange={handleChange}
 				/>
+
 				<input
 					required
 					type="email"
@@ -45,6 +47,7 @@ const Register = () => {
 					name="email"
 					onChange={handleChange}
 				/>
+
 				<input
 					required
 					type="password"
@@ -52,8 +55,11 @@ const Register = () => {
 					name="password"
 					onChange={handleChange}
 				/>
+
 				<button onClick={handleSubmit}>Register</button>
+
 				{err && <p>{err}</p>}
+
 				<span>
 					Do you have an account? <Link to="/login">Login</Link>
 				</span>

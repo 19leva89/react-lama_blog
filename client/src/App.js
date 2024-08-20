@@ -1,14 +1,10 @@
-import {
-	createBrowserRouter,
-	RouterProvider,
-	Outlet,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Write from "./pages/Write";
-import Single from "./pages/Single";
+import Home from "./pages/home";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import Write from "./pages/write";
+import Single from "./pages/single";
 
 import Navbar from "./components/navbar";
 import Footer from "./components/footer";

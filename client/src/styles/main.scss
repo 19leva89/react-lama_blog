@@ -10,8 +10,8 @@ $lightGreen: #b9e7e7;
       text-decoration: none;
       color: inherit;
     }
-    //LOGIN & REGISTER
 
+    // LOGIN & REGISTER
     .auth {
       display: flex;
       flex-direction: column;
@@ -61,8 +61,7 @@ $lightGreen: #b9e7e7;
       }
     }
 
-    //NAVBAR
-
+    // NAVBAR
     .navbar {
       .container {
         padding: 10px 0px;
@@ -109,8 +108,7 @@ $lightGreen: #b9e7e7;
       }
     }
 
-    //FOOTER
-
+    // FOOTER
     footer {
       margin-top: 100px;
       padding: 20px;
@@ -124,8 +122,7 @@ $lightGreen: #b9e7e7;
       }
     }
 
-    //HOME
-
+    // HOME
     .home {
       .posts {
         margin-top: 50px;
@@ -197,8 +194,7 @@ $lightGreen: #b9e7e7;
       }
     }
 
-    //SINGLE
-
+    // SINGLE
     .single {
       display: flex;
       gap: 50px;
@@ -298,8 +294,7 @@ $lightGreen: #b9e7e7;
       }
     }
 
-    //WRITE
-
+    // WRITE
     .add {
       margin-top: 20px;
       display: flex;
