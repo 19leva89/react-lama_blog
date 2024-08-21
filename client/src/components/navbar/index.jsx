@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import { AuthContext } from "../../context/authContext";
 
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Logo from "../../img/logo.png";
 
 const Navbar = () => {
@@ -18,37 +20,39 @@ const Navbar = () => {
 				</div>
 
 				<div className="links">
-					<Link className="link" to="/?cat=art">
+					<Link className="link" to="/?category=art">
 						<h6>ART</h6>
 					</Link>
 
-					<Link className="link" to="/?cat=science">
+					<Link className="link" to="/?category=science">
 						<h6>SCIENCE</h6>
 					</Link>
 
-					<Link className="link" to="/?cat=technology">
+					<Link className="link" to="/?category=technology">
 						<h6>TECHNOLOGY</h6>
 					</Link>
 
-					<Link className="link" to="/?cat=cinema">
+					<Link className="link" to="/?category=cinema">
 						<h6>CINEMA</h6>
 					</Link>
 
-					<Link className="link" to="/?cat=design">
+					<Link className="link" to="/?category=design">
 						<h6>DESIGN</h6>
 					</Link>
 
-					<Link className="link" to="/?cat=food">
+					<Link className="link" to="/?category=food">
 						<h6>FOOD</h6>
 					</Link>
 
 					<span>{currentUser?.username}</span>
 
 					{currentUser ? (
-						<span onClick={logout}>Logout</span>
+						<span onClick={logout}>
+							<LogoutIcon />
+						</span>
 					) : (
 						<Link className="link" to="/login">
-							Login
+							<LoginIcon />
 						</Link>
 					)}
 

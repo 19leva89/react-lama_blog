@@ -2,11 +2,11 @@ import { db } from "../db.js";
 import jwt from "jsonwebtoken";
 
 export const getPosts = (req, res) => {
-	const q = req.query.cat
-		? "SELECT * FROM posts WHERE cat=?"
+	const q = req.query.category
+		? "SELECT * FROM posts WHERE category=?"
 		: "SELECT * FROM posts";
 
-	db.query(q, [req.query.cat], (err, data) => {
+	db.query(q, [req.query.category], (err, data) => {
 		if (err) return res.status(500).send(err);
 
 		return res.status(200).json(data);
@@ -15,7 +15,7 @@ export const getPosts = (req, res) => {
 
 export const getPost = (req, res) => {
 	const q =
-		"SELECT p.id, `username`, `title`, `description`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.userId WHERE p.id = ? ";
+		"SELECT p.id, `username`, `title`, `description`, p.img, u.img AS userImg, `category`,`date` FROM users u JOIN posts p ON u.id = p.userId WHERE p.id = ? ";
 
 	db.query(q, [req.params.id], (err, data) => {
 		if (err) return res.status(500).json(err);
@@ -28,17 +28,18 @@ export const addPost = (req, res) => {
 	const token = req.cookies.access_token;
 	if (!token) return res.status(401).json("Not authenticated!");
 
-	jwt.verify(token, "jwtkey", (err, userInfo) => {
+	const secret = process.env.JWT_SECRET;
+	jwt.verify(token, secret, (err, userInfo) => {
 		if (err) return res.status(403).json("Token is not valid!");
 
 		const q =
-			"INSERT INTO posts(`title`, `description`, `img`, `cat`, `date`,`userId`) VALUES (?)";
+			"INSERT INTO posts(`title`, `description`, `img`, `category`, `date`,`userId`) VALUES (?)";
 
 		const values = [
 			req.body.title,
 			req.body.description,
 			req.body.img,
-			req.body.cat,
+			req.body.category,
 			req.body.date,
 			userInfo.id,
 		];
@@ -54,7 +55,8 @@ export const deletePost = (req, res) => {
 	const token = req.cookies.access_token;
 	if (!token) return res.status(401).json("Not authenticated!");
 
-	jwt.verify(token, "jwtkey", (err, userInfo) => {
+	const secret = process.env.JWT_SECRET;
+	jwt.verify(token, secret, (err, userInfo) => {
 		if (err) return res.status(403).json("Token is not valid!");
 
 		const postId = req.params.id;
@@ -72,14 +74,15 @@ export const updatePost = (req, res) => {
 	const token = req.cookies.access_token;
 	if (!token) return res.status(401).json("Not authenticated!");
 
-	jwt.verify(token, "jwtkey", (err, userInfo) => {
+	const secret = process.env.JWT_SECRET;
+	jwt.verify(token, secret, (err, userInfo) => {
 		if (err) return res.status(403).json("Token is not valid!");
 
 		const postId = req.params.id;
 		const q =
-			"UPDATE posts SET `title`=?,`description`=?,`img`=?,`cat`=? WHERE `id` = ? AND `userId` = ?";
+			"UPDATE posts SET `title`=?,`description`=?,`img`=?,`category`=? WHERE `id` = ? AND `userId` = ?";
 
-		const values = [req.body.title, req.body.description, req.body.img, req.body.cat];
+		const values = [req.body.title, req.body.description, req.body.img, req.body.category];
 
 		db.query(q, [...values, postId, userInfo.id], (err, data) => {
 			if (err) return res.status(500).json(err);

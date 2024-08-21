@@ -9,10 +9,10 @@ import "react-quill/dist/quill.snow.css";
 
 const Write = () => {
 	const state = useLocation().state;
-	const [value, setValue] = useState(state?.title || "");
-	const [title, setTitle] = useState(state?.desc || "");
+	const [title, setTitle] = useState(state?.title || "");
+	const [description, setDescription] = useState(state?.description || "");
 	const [file, setFile] = useState(null);
-	const [cat, setCat] = useState(state?.cat || "");
+	const [category, setCategory] = useState(state?.category || "");
 
 	const navigate = useNavigate()
 
@@ -32,23 +32,24 @@ const Write = () => {
 		const imgUrl = await upload();
 
 		try {
-			state
-				? await axios.put(`/posts/${state.id}`, {
-					title,
-					desc: value,
-					cat,
-					img: file ? imgUrl : "",
-				})
-				: await axios.post(`/posts/`, {
-					title,
-					desc: value,
-					cat,
-					img: file ? imgUrl : "",
+			const postData = {
+				title,
+				description,
+				category,
+				img: imgUrl || null,
+			};
+
+			if (state) {
+				await axios.put(`/posts/${state.id}`, postData);
+			} else {
+				await axios.post(`/posts/`, {
+					...postData,
 					date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
 				});
-			navigate("/")
+			}
+			navigate("/");
 		} catch (err) {
-			console.log(err);
+			console.error("Failed to save post:", err);
 		}
 	};
 
@@ -58,7 +59,7 @@ const Write = () => {
 				<input
 					type="text"
 					placeholder="Title"
-					value={title} //Проверить необходимость этой строки
+					value={title}
 					onChange={(e) => setTitle(e.target.value)}
 				/>
 
@@ -66,8 +67,8 @@ const Write = () => {
 					<ReactQuill
 						className="editor"
 						theme="snow"
-						value={value}
-						onChange={setValue}
+						value={description}
+						onChange={setDescription}
 					/>
 				</div>
 			</div>
@@ -96,6 +97,7 @@ const Write = () => {
 
 					<div className="buttons">
 						<button>Save as a draft</button>
+
 						<button onClick={handleClick}>Publish</button>
 					</div>
 				</div>
@@ -103,83 +105,19 @@ const Write = () => {
 				<div className="item">
 					<h1>Category</h1>
 
-					<div className="cat">
-						<input
-							type="radio"
-							checked={cat === "art"}
-							name="cat"
-							value="art"
-							id="art"
-							onChange={(e) => setCat(e.target.value)}
-						/>
-
-						<label htmlFor="art">Art</label>
-					</div>
-
-					<div className="cat">
-						<input
-							type="radio"
-							checked={cat === "science"}
-							name="cat"
-							value="science"
-							id="science"
-							onChange={(e) => setCat(e.target.value)}
-						/>
-
-						<label htmlFor="science">Science</label>
-					</div>
-
-					<div className="cat">
-						<input
-							type="radio"
-							checked={cat === "technology"}
-							name="cat"
-							value="technology"
-							id="technology"
-							onChange={(e) => setCat(e.target.value)}
-						/>
-
-						<label htmlFor="technology">Technology</label>
-					</div>
-
-					<div className="cat">
-						<input
-							type="radio"
-							checked={cat === "cinema"}
-							name="cat"
-							value="cinema"
-							id="cinema"
-							onChange={(e) => setCat(e.target.value)}
-						/>
-
-						<label htmlFor="cinema">Cinema</label>
-					</div>
-
-					<div className="cat">
-						<input
-							type="radio"
-							checked={cat === "design"}
-							name="cat"
-							value="design"
-							id="design"
-							onChange={(e) => setCat(e.target.value)}
-						/>
-
-						<label htmlFor="design">Design</label>
-					</div>
-
-					<div className="cat">
-						<input
-							type="radio"
-							checked={cat === "food"}
-							name="cat"
-							value="food"
-							id="food"
-							onChange={(e) => setCat(e.target.value)}
-						/>
-
-						<label htmlFor="food">Food</label>
-					</div>
+					{["art", "science", "technology", "cinema", "design", "food"].map((cat) => (
+						<div className="category" key={cat}>
+							<input
+								type="radio"
+								checked={category === cat}
+								name="category"
+								value={cat}
+								id={cat}
+								onChange={(e) => setCategory(e.target.value)}
+							/>
+							<label htmlFor={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</label>
+						</div>
+					))}
 				</div>
 			</div>
 		</div>

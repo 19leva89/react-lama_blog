@@ -64,7 +64,7 @@ const Single = () => {
 						<p>Posted {moment(post.date).fromNow()}</p>
 					</div>
 
-					{currentUser.username === post.username && (
+					{currentUser?.username === post.username && (
 						<div className="edit">
 							<Link to={`/write?edit=2`} state={post}>
 								<img src={Edit} alt="" />
@@ -77,10 +77,10 @@ const Single = () => {
 
 				<h1>{post.title}</h1>
 
-				<p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.desc) }}	></p>
+				<p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }}	></p>
 			</div>
 
-			<Menu cat={post.cat} />
+			<Menu category={post.category} />
 		</div>
 	);
 };

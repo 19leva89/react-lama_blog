@@ -6,19 +6,20 @@ import axios from "axios";
 const Home = () => {
 	const [posts, setPosts] = useState([]);
 
-	const cat = useLocation().search
+	const category = useLocation().search
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await axios.get(`/posts${cat}`);
+				const res = await axios.get(`/posts${category}`);
 				setPosts(res.data);
 			} catch (err) {
 				console.log(err);
 			}
 		};
+
 		fetchData();
-	}, [cat]);
+	}, [category]);
 
 	const getText = (html) => {
 		const doc = new DOMParser().parseFromString(html, "text/html")
@@ -39,9 +40,11 @@ const Home = () => {
 								<h1>{post.title}</h1>
 							</Link>
 
-							<p>{getText(post.desc)}</p>
+							<p>{getText(post.description)}</p>
 
-							<button>Read More</button>
+							<Link className="link" to={`/post/${post.id}`}>
+								<button>Read More</button>
+							</Link>
 						</div>
 					</div>
 				))}

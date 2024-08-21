@@ -5,6 +5,7 @@ This project contains the following technologies:
 - Moment (date/time manipulation)
 - Sass (stylization)
 - Web Vitals (stylization)
+- Material Icons (stylization)
 - React Quill (text editor)
 - Dompurify (XSS sanitizer)
 
