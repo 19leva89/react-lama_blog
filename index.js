@@ -1,36 +1,37 @@
 import express from "express";
-import multer from "multer";
+import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 
+import upload from "./upload.js";
+
+dotenv.config();
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
-const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, "../client/public/upload");
-	},
-	filename: function (req, file, cb) {
-		cb(null, Date.now() + file.originalname);
-	},
-});
-
-const upload = multer({ storage });
-
-app.post("/api/upload", upload.single("file"), function (req, res) {
+// multer upload
+app.post("/api/upload", upload.single("file"), (req, res) => {
+	if (!req.file) {
+		return res.status(400).json({ error: "No file uploaded" });
+	}
 	const file = req.file;
 	res.status(200).json(file.filename);
 });
 
+// routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
-app.listen(4000, () => {
-	console.log("Connected!");
+// server port
+
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+	console.log(`API working on port ${PORT}!`);
 });

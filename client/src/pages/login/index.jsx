@@ -21,8 +21,10 @@ const Login = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
 		try {
 			await login(inputs)
+
 			navigate("/");
 		} catch (err) {
 			setError(err.response.data);
@@ -33,7 +35,7 @@ const Login = () => {
 		<div className="auth">
 			<h1>Login</h1>
 
-			<form>
+			<form onSubmit={handleSubmit}>
 				<input
 					required
 					type="text"
@@ -50,7 +52,7 @@ const Login = () => {
 					onChange={handleChange}
 				/>
 
-				<button onClick={handleSubmit}>Login</button>
+				<button type="submit">Login</button>
 
 				{err && <p>{err}</p>}
 

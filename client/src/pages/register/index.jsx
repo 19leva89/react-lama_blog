@@ -19,8 +19,10 @@ const Register = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
 		try {
 			await axios.post("/auth/register", inputs);
+
 			navigate("/login");
 		} catch (err) {
 			setError(err.response.data);
@@ -31,7 +33,7 @@ const Register = () => {
 		<div className="auth">
 			<h1>Register</h1>
 
-			<form>
+			<form onSubmit={handleSubmit}>
 				<input
 					required
 					type="text"
@@ -56,7 +58,7 @@ const Register = () => {
 					onChange={handleChange}
 				/>
 
-				<button onClick={handleSubmit}>Register</button>
+				<button type="submit">Register</button>
 
 				{err && <p>{err}</p>}
 
