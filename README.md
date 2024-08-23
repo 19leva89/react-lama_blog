@@ -14,6 +14,7 @@ Server:
 - MySQL2 (relational database)
 - Bcrypt (password hashing)
 - JSON Web Token (securely transmitting information)
+- CORS (cross-origin resource sharing)
 - Multer (uploading files)
 
 To run the client and server via concurrently:

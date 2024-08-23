@@ -1,5 +1,12 @@
 import { db } from "../db.js";
 import jwt from "jsonwebtoken";
+import fs from 'fs';
+import path, { dirname } from "path";
+import { fileURLToPath } from 'url';
+
+// Получаем __dirname для ES6 модулей
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const getPosts = (req, res) => {
 	const q = req.query.category
@@ -60,33 +67,87 @@ export const deletePost = (req, res) => {
 		if (err) return res.status(403).json("Token is not valid!");
 
 		const postId = req.params.id;
-		const q = "DELETE FROM posts WHERE `id` = ? AND `userId` = ?";
 
-		db.query(q, [postId, userInfo.id], (err, data) => {
-			if (err) return res.status(403).json("You can delete only your post!");
+		// Получаем имя изображения из БД
+		const getImgQuery = "SELECT img FROM posts WHERE `id` = ? AND `userId` = ?";
+		db.query(getImgQuery, [postId, userInfo.id], (err, data) => {
+			if (err || data.length === 0) {
+				return res.status(403).json("You can delete only your post!");
+			}
 
-			return res.json("Post has been deleted!");
+			const imgName = data[0].img; // Получаем имя изображения
+			const imagePath = path.join(__dirname, '..', 'client', 'public', 'upload', imgName);
+
+			// Удаляем пост из базы данных
+			const deleteQuery = "DELETE FROM posts WHERE `id` = ? AND `userId` = ?";
+			db.query(deleteQuery, [postId, userInfo.id], (err, data) => {
+				if (err) return res.status(500).json(err);
+
+				// Удаляем изображение из файловой системы
+				fs.unlink(imagePath, (err) => {
+					if (err) {
+						console.error("Failed to delete image:", err);
+					}
+				});
+
+				return res.status(200).json("Post has been deleted!");
+			});
 		});
 	});
 };
 
 export const updatePost = (req, res) => {
 	const token = req.cookies.access_token;
-	if (!token) return res.status(401).json("Not authenticated!");
+	if (!token) {
+		return res.status(401).json("Not authenticated!");
+	}
 
 	const secret = process.env.JWT_SECRET;
 	jwt.verify(token, secret, (err, userInfo) => {
-		if (err) return res.status(403).json("Token is not valid!");
+		if (err) {
+			return res.status(403).json("Token is not valid!");
+		}
 
 		const postId = req.params.id;
-		const q =
-			"UPDATE posts SET `title`=?,`description`=?,`img`=?,`category`=? WHERE `id` = ? AND `userId` = ?";
 
-		const values = [req.body.title, req.body.description, req.body.img, req.body.category];
+		// Получаем текущее изображение из БД
+		const getCurrentImgQuery = "SELECT img FROM posts WHERE id = ? AND userId = ?";
+		db.query(getCurrentImgQuery, [postId, userInfo.id], (err, data) => {
+			if (err) {
+				return res.status(500).json(err);
+			}
 
-		db.query(q, [...values, postId, userInfo.id], (err, data) => {
-			if (err) return res.status(500).json(err);
-			return res.json("Post has been updated.");
+			const currentImg = data[0]?.img;
+
+			const q =
+				"UPDATE posts SET `title`=?,`description`=?,`img`=?,`category`=? WHERE `id` = ? AND `userId` = ?";
+			const values = [
+				req.body.title,
+				req.body.description,
+				req.body.img,
+				req.body.category,
+			];
+
+			db.query(q, [...values, postId, userInfo.id], (err, data) => {
+				if (err) {
+					return res.status(500).json(err);
+				}
+
+				// Удаляем старое изображение, если новое изображение отличается от текущего
+				if (currentImg && currentImg !== req.body.img) {
+					const imagePath = path.join(__dirname, '..', 'client', 'public', 'upload', currentImg);
+
+					// Удаляем изображение из файловой системы
+					fs.unlink(imagePath, (err) => {
+						if (err) {
+							console.error("Failed to delete image:", err);
+						}
+					});
+				}
+
+				// Отправляем ответ в любом случае
+				return res.status(200).json("Post has been updated.");
+			});
 		});
 	});
 };

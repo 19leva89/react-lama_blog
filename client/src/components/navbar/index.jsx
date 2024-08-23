@@ -5,7 +5,7 @@ import { AuthContext } from "../../context/authContext";
 
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
-import Logo from "../../img/logo.png";
+import Logo from "../../img/logo.svg";
 
 const Navbar = () => {
 	const { currentUser, logout } = useContext(AuthContext);

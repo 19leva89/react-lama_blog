@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from 'dotenv';
+import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.js";
@@ -11,7 +12,17 @@ import upload from "./upload.js";
 dotenv.config();
 const app = express();
 
+// middlewares
+app.use((req, res, next) => {
+	res.header("Access-Control-Allow-Credentials", true);
+	next();
+});
 app.use(express.json());
+app.use(
+	cors({
+		origin: "http://localhost:3000",
+	})
+);
 app.use(cookieParser());
 
 // multer upload

@@ -8,8 +8,8 @@ import { AuthContext } from "../../context/authContext";
 
 import Menu from "../../components/menu";
 
-import Edit from "../../img/edit.png";
-import Delete from "../../img/delete.png";
+import Edit from "../../img/edit.svg";
+import Delete from "../../img/delete.svg";
 
 const Single = () => {
 	const [post, setPost] = useState({});
@@ -30,12 +30,14 @@ const Single = () => {
 				console.log(err);
 			}
 		};
+
 		fetchData();
 	}, [postId]);
 
 	const handleDelete = async () => {
 		try {
 			await axios.delete(`/posts/${postId}`);
+
 			navigate("/")
 		} catch (err) {
 			console.log(err);
@@ -53,10 +55,8 @@ const Single = () => {
 				<img src={`../upload/${post?.img}`} alt="" />
 
 				<div className="user">
-					{post.userImg && <img
-						src={post.userImg}
-						alt=""
-					/>}
+					{post.userImg && <img src={`../upload/${post.userImg}`} alt="" />}
+
 
 					<div className="info">
 						<span>{post.username}</span>
@@ -67,10 +67,10 @@ const Single = () => {
 					{currentUser?.username === post.username && (
 						<div className="edit">
 							<Link to={`/write?edit=2`} state={post}>
-								<img src={Edit} alt="" />
+								<img src={Edit} alt="edit" />
 							</Link>
 
-							<img onClick={handleDelete} src={Delete} alt="" />
+							<img onClick={handleDelete} src={Delete} alt="delete" />
 						</div>
 					)}
 				</div>
@@ -80,7 +80,7 @@ const Single = () => {
 				<p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }}	></p>
 			</div>
 
-			<Menu category={post.category} />
+			<Menu category={post.category} currentPostId={post.id} />
 		</div>
 	);
 };

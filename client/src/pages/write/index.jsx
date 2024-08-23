@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import axios from "axios";
@@ -13,8 +13,21 @@ const Write = () => {
 	const [description, setDescription] = useState(state?.description || "");
 	const [file, setFile] = useState(null);
 	const [category, setCategory] = useState(state?.category || "");
+	const [previewImage, setPreviewImage] = useState(state?.img || "");
 
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setPreviewImage(reader.result);
+			};
+			reader.readAsDataURL(file);
+		} else {
+			setPreviewImage(state?.img || "");
+		}
+	}, [file, state?.img]);
 
 	const upload = async () => {
 		try {
@@ -27,31 +40,46 @@ const Write = () => {
 		}
 	};
 
-	const handleClick = async (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const imgUrl = await upload();
+
+		let imgUrl = previewImage;
+
+		if (file) {
+			imgUrl = await upload();
+			if (!imgUrl) {
+				console.error("Image upload failed");
+				return;
+			}
+		}
 
 		try {
 			const postData = {
 				title,
 				description,
 				category,
-				img: imgUrl || null,
+				img: imgUrl || state?.img || null,
 			};
 
 			if (state) {
 				await axios.put(`/posts/${state.id}`, postData);
+				console.log("Post updated successfully, ID:", state.id);
+
+				navigate(`/post/${state.id}`);  // Ensure this ID is defined
 			} else {
-				await axios.post(`/posts/`, {
+				const response = await axios.post(`/posts/`, {
 					...postData,
 					date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
 				});
+				console.log("New post created, ID:", response.data.id); // Log the new ID
+
+				navigate(`/post/${response.data.id}`); // Use the newly created post ID
 			}
-			navigate("/");
 		} catch (err) {
 			console.error("Failed to save post:", err);
 		}
 	};
+
 
 	return (
 		<div className="add">
@@ -75,7 +103,7 @@ const Write = () => {
 
 			<div className="menu">
 				<div className="item">
-					<h1>Publish</h1>
+					<h1>{state ? "Update" : "Publish"}</h1>
 
 					<span>
 						<b>Status: </b> Draft
@@ -85,20 +113,31 @@ const Write = () => {
 						<b>Visibility: </b> Public
 					</span>
 
-					<input
-						style={{ display: "none" }}
-						type="file"
-						id="file"
-						name=""
-						onChange={(e) => setFile(e.target.files[0])}
-					/>
+					<div className="image-preview">
+						<input
+							style={{ display: "none" }}
+							type="file"
+							id="file"
+							name=""
+							onChange={(e) => setFile(e.target.files[0])}
+						/>
 
-					<label className="file" htmlFor="file">Upload Image</label>
+						<label className="file" htmlFor="file">Upload Image</label>
+
+						{previewImage && (
+							<img
+								src={file ? previewImage : `../upload/${previewImage}`}
+								alt="preview"
+							/>
+						)}
+					</div>
 
 					<div className="buttons">
 						<button>Save as a draft</button>
 
-						<button onClick={handleClick}>Publish</button>
+						<button onClick={handleSubmit}>
+							{state ? "Update" : "Publish"}
+						</button>
 					</div>
 				</div>
 
