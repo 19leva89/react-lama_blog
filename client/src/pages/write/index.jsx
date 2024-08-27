@@ -4,14 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import TinyMCEEditor from "../../components/tinymce-editor";
 
 const Write = () => {
 	const state = useLocation().state;
 	const [title, setTitle] = useState(state?.title || "");
 	const [description, setDescription] = useState(state?.description || "");
-	const [file, setFile] = useState(null);
+	const [file, setFile] = useState(state?.file || "");
 	const [category, setCategory] = useState(state?.category || "");
 	const [previewImage, setPreviewImage] = useState(state?.img || "");
 
@@ -33,6 +32,7 @@ const Write = () => {
 		try {
 			const formData = new FormData();
 			formData.append("file", file);
+
 			const res = await axios.post("/upload", formData);
 			return res.data;
 		} catch (err) {
@@ -63,7 +63,7 @@ const Write = () => {
 
 			if (state) {
 				await axios.put(`/posts/${state.id}`, postData);
-				console.log("Post updated successfully, ID:", state.id);
+				// console.log("Post updated successfully, ID:", state.id);
 
 				navigate(`/post/${state.id}`);  // Ensure this ID is defined
 			} else {
@@ -71,7 +71,7 @@ const Write = () => {
 					...postData,
 					date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
 				});
-				console.log("New post created, ID:", response.data.id); // Log the new ID
+				// console.log("New post created, ID:", response.data.id);
 
 				navigate(`/post/${response.data.id}`); // Use the newly created post ID
 			}
@@ -92,11 +92,13 @@ const Write = () => {
 				/>
 
 				<div className="editorContainer">
-					<ReactQuill
-						className="editor"
-						theme="snow"
+					<TinyMCEEditor
 						value={description}
 						onChange={setDescription}
+						initOptions={{
+							height: 395,
+							menubar: false,
+						}}
 					/>
 				</div>
 			</div>

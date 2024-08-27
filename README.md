@@ -6,7 +6,7 @@ This project contains the following technologies:
 - Sass (stylization)
 - Web Vitals (stylization)
 - Material Icons (stylization)
-- React Quill (text editor)
+- TinyMCE (text editor)
 - Dompurify (XSS sanitizer)
 
 Server:
